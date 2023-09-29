@@ -3,7 +3,7 @@ import express from 'express';
 import { Server } from 'socket.io';
 import { setupSocket } from './setup-socket';
 import { setupRoutes } from './setup-routes';
-import { setupDatabase } from './database/setup-database';
+import { setupDatabase } from './database/database';
 
 export const APP = express();
 export const SERVER = createServer(APP);

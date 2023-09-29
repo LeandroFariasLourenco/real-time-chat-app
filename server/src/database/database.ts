@@ -9,8 +9,16 @@ export const setupDatabase = async () => {
     driver: sqlite3.Database,
   });
 
-  await database.exec(MESSAGES_QUERY.CREATE_TABLE);
+  sqlite3.verbose();
   await database.exec(USERS_QUERY.CREATE_TABLE);
-
-  return database;
+  await database.exec(MESSAGES_QUERY.CREATE_TABLE);
 };
+
+export const getDatabaseConnection = async () => {
+
+  sqlite3.verbose();
+  return await open({
+    filename: './database.sqlite',
+    driver: sqlite3.Database,
+  })
+}

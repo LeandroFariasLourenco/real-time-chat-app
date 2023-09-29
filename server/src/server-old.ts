@@ -16,7 +16,6 @@ const messages: IMessage[] = [];
 
 ioServer.on('connection', (socket: Socket) => {
   console.log('a user connected');
-  console.log(users);
 
   socket.on("User Created", (user: IUser) => {
     user.id = uuidv4();
