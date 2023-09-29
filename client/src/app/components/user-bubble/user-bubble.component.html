@@ -1,3 +1,11 @@
-<div class="user-bubble flex align-items-center justify-content-center" [style]="{ backgroundColor: user.color }">
-  {{ user.name.charAt(0) }}
+<div class="user-bubble flex align-items-center justify-content-center"
+  [style]="{ backgroundColor: color }"
+  [ngClass]="{
+    'cursor-pointer': enableColorPicker
+  }"
+>
+  <ng-container *ngIf="enableColorPicker">
+    <input type="color" class="cursor-pointer user-bubble-color-picker" [(ngModel)]="color" (change)="onColorChange()" style="opacity: 0;"/>
+  </ng-container>
+  {{ username }}
 </div>

@@ -3,4 +3,10 @@
   height: 40px;
   width: 40px;
   font-weight: bold;
+  position: relative;
+
+  &-color-picker {
+    position: absolute;
+    offset: 0;
+  }
 }

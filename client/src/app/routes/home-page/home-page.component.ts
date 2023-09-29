@@ -18,8 +18,7 @@ export class HomePageComponent implements OnInit {
 
   constructor(
     private readonly chatService: ChatService,
-    private readonly userService: UserService,
-    private readonly messageService: MessageService,
+    private readonly messageService: MessageService
   ) { }
 
   public ngOnInit(): void {
@@ -27,20 +26,12 @@ export class HomePageComponent implements OnInit {
   }
 
   public listenUserConnections(): void {
-    this.chatService.onUserConnected().subscribe(({ name }) => {
-      this.notifications = [{
+    this.chatService.onUserConnected().subscribe((users) => {
+      this.messageService.add({
         severity: 'warn',
-        summary: 'Usuário desconectado',
-        detail: `${name} saiu da sessão.`
-      }];
+        summary: 'Usuário conectado',
+        detail: `${users.at(-1)!.name} entrou na sessão.`
+      });
     });
-
-    // this.chatService.onUserDisconnected().subscribe(({ name }) => {
-    //   this.notifications = [{
-    //     severity: 'warn',
-    //     summary: 'Usuário desconectado',
-    //     detail: `${name} saiu da sessão.`
-    //   }];
-    // });
   }
 }

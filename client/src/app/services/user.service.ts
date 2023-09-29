@@ -1,10 +1,12 @@
-import { Injectable, NgZone } from "@angular/core";
-import { ChatService } from "./chat.service";
-import { SocketIoClient } from "../clients/socket-io";
-import { Observable } from "rxjs";
+import { DialogService } from 'primeng/dynamicdialog';
 import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
 import { IUser } from "lib";
+import { Observable } from "rxjs";
+import { SocketIoClient } from "../clients/socket-io";
 import { convertToObservable } from "../functions/convert-to-observable";
+import { ChatService } from "./chat.service";
 
 @Injectable()
 export class UserService {
@@ -13,27 +15,33 @@ export class UserService {
   constructor(
     private readonly chatService: ChatService,
     private readonly httpClient: HttpClient,
-  ) {
-    convertToObservable<IUser>("Logged User").subscribe((createdUser) => {
-      localStorage.setItem(this.storageKey, JSON.stringify(createdUser));
-      location.reload();
-    })
-  }
+    private readonly router: Router,
+    private readonly dialogService: DialogService
+  ) { }
   
-  public createUser(user: IUser): void {
-    SocketIoClient.emit("User Created", user);
+  public createUser(username: string): void {
+    SocketIoClient.emit("Create User", { username });
+    convertToObservable("New User Created").subscribe((createdUser) => {
+      this.dialogService.dialogComponentRefMap.forEach((dialog) => dialog.destroy()),
+      localStorage.setItem(this.storageKey, JSON.stringify(createdUser));
+      this.router.navigate(['/home-page']);
+    });
   }
 
-  public getUsers(): Observable<IUser[]> {
-    return this.httpClient.get<IUser[]>('server/users');
-  }
-
-  public onUserCreated(): Observable<IUser[]> {
-    return convertToObservable<IUser[]>("User Created");
+  public getUsers(): Observable<{ users: IUser[] }> {
+    return this.httpClient.get<{ users: IUser[] }>('server/users');
   }
 
   public updateUser(user: IUser): void {
     SocketIoClient.emit("Update User", user);
+    convertToObservable("Current User Updated").subscribe(() => {
+      localStorage.setItem(this.storageKey, JSON.stringify(user));
+      location.reload();
+    });
+  }
+
+  public updateUserColor(userId: string, color: string): void {
+    SocketIoClient.emit("Change User Color", { userId, color });
   }
 
   public getCurrentUser(): IUser | null {

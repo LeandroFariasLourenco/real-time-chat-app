@@ -43,8 +43,8 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
   public sendMessage(): void {
     this.chatService.sendMessage({
+      user: this.user,
       content: this.chatForm.value.message,
-      user: this.user.name,
       timestamp: new Date().toISOString()
     });
     this.chatForm.reset();
@@ -70,11 +70,12 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
     this.chatService.onUserIsTyping().subscribe((user) => {
       this.currentlyTypingUser = user;
+      this.scrollToEnd();
     });
   }
 
   public getChatHistory(): void {
-    this.chatService.getMessageHistory().subscribe((messages) => {
+    this.chatService.getMessageHistory().subscribe(({ messages }) => {
       this.messages = [...messages];
       this.scrollToEnd();
     });

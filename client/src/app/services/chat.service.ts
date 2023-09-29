@@ -17,15 +17,15 @@ export class ChatService {
   }
 
   public sendMessage(message: IMessage): void {
-    SocketIoClient.emit("Message Received", message);
+    SocketIoClient.emit("Create Message", message);
   }
 
   public listenToMessages(): Observable<IMessage[]> {
-    return convertToObservable<IMessage[]>("Message Received");
+    return convertToObservable<IMessage[]>("New Message Received");
   }
 
-  public onUserConnected(): Observable<IUser> {
-    return convertToObservable<IUser>("User Connected");
+  public onUserConnected(): Observable<IUser[]> {
+    return convertToObservable<IUser[]>("New User Connected");
   }
   
   public onUserDisconnected(): Observable<IUser> {
@@ -40,7 +40,7 @@ export class ChatService {
     return convertToObservable<IUser | null>("Is Typing");
   }
 
-  public getMessageHistory(): Observable<IMessage[]> {
-    return this.httpClient.get<IMessage[]>('server/messages');
+  public getMessageHistory(): Observable<{ messages: IMessage[]}> {
+    return this.httpClient.get<{ messages: IMessage[] }>('server/messages');
   }
 }

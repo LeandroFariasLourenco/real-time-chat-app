@@ -33,18 +33,14 @@ export class UserFormComponent implements OnInit {
   }
 
   public handleSubmit(): void {
-    const name = this.userForm.value.name;
+    const { name } = this.userForm.value;
     if (this.mode === 'create') {
-      this.userService.createUser({
-        name,
-        color: randomColor(),
-      });
-      location.reload();
+      this.userService.createUser(name)
       return;
     }
     this.userService.updateUser({
       ...this.user!,
-      name,
+      name: name,
     });
   }
 
