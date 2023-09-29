@@ -1,0 +1,12 @@
+.side-bar {
+  border: 1px solid var(--gray-400);;
+  height: 100%;
+
+  &-header {
+    border-bottom: 1px solid var(--gray-400);;
+  }
+
+  &-thumb {
+    border-radius: 100%;
+  }
+}

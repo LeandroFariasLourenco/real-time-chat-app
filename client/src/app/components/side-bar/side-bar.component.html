@@ -1,0 +1,31 @@
+<div class="col-12 flex flex-column side-bar">
+  <div
+    class="col-12 flex justify-content-between align-items-center side-bar-header"
+  >
+    <div class="col-12 flex align-items-center">
+      <div class="flex flex-1 align-items-center gap-2">
+        <app-user-bubble [user]="currentUser"></app-user-bubble>
+        <h5>{{ currentUser.name }}</h5>
+      </div>
+      <i class="pi pi-pencil" style="font-size: 1rem; cursor: pointer;" (click)="openEditNickName()"></i>
+    </div>
+  </div>
+  <div class="flex-1">
+    <ng-container *ngFor="let user of users">
+      <ng-container *ngIf="user.name !== currentUser.name">
+        <div class="col-12 flex align-items-center gap-2">
+          <app-user-bubble [user]="user"></app-user-bubble>
+          <h5>{{ user.name }}</h5>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+  <p-divider></p-divider>
+  <div class="col-12 flex justify-content-between">
+    <p-button
+      (onClick)="userService.logout()"
+      styleClass="p-button-danger"
+      icon="pi pi-sign-in"
+    ></p-button>
+  </div>
+</div>

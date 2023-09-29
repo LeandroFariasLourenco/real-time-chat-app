@@ -1,0 +1,57 @@
+.chat {
+  height: 100vh;
+
+  &-container {
+    border: 1px solid var(--gray-400);
+    padding: 0 5px;
+    overflow: auto;
+    height: 100%;
+    position: relative;
+  }
+
+  &-message {
+    margin-top: 5px;
+
+    &-typing {
+      position: absolute;
+      bottom: 0;
+      left: 10px;
+      background-color: var(--gray-600);
+      padding: 15px 10px;
+
+      span {
+        color: var(--primary-color-text);
+      }
+    }
+    
+    & + & {
+      &.first--in--group {
+        margin-top: 10px;
+      }
+
+      padding-top: 0;
+      margin-top: -5px;
+    }
+
+    &-bubble {
+      border-radius: 100%;
+      background-color: var(--gray-400);
+    }
+
+    &-content {
+      padding: 10px;
+      background-color: var(--blue-200);
+    }
+    
+    &-user {
+      .chat-message-content {
+        background-color: var(--surface-200);
+      }
+
+      & + & {
+        padding-top: 0;
+        margin-top: -5px;
+      }
+    }
+  }
+}

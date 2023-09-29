@@ -1,0 +1,12 @@
+export const MESSAGES_QUERY = {
+  CREATE_TABLE: `
+    CREATE TABLE IF NOT EXISTS Messages (
+      Id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      User VARCHAR(255) NOT NULL,
+      timestamp VARCHAR(255) NOT NULL
+    );
+  `,
+  DROP_TABLE: `
+    DROP TABLE Messages
+  `,
+};

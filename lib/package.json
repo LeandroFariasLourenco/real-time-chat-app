@@ -1,0 +1,19 @@
+{
+  "name": "lib",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "rm -rf ./dist && tsc && cp ./package.json ./dist && cd ./dist && npm pack",
+    "update": "concurrently \"cd ./../server && npm run update-lib\" \"cd ./../client && npm run update-lib\"",
+    "distribute": "npm run build && npm run update"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "main": "./index.js",
+  "typings": "./index.d.ts",
+  "dependencies": {
+    "concurrently": "^8.2.1",
+    "typescript": "^5.2.2"
+  }
+}

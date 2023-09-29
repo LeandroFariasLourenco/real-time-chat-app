@@ -1,0 +1,16 @@
+<form class="flex gap-2" [formGroup]="userForm" (ngSubmit)="handleSubmit()">
+  <input
+    type="text"
+    formControlName="name"
+    pInputText
+    placeholder="Insira seu nome"
+    style="width: 100%"
+  />
+  <p-button
+    type="submit"
+    [disabled]="userForm.invalid"
+    styleClass="p-button-success"
+    icon="pi pi-arrow-right"
+    (onClick)="handleSubmit()"
+  ></p-button>
+</form>

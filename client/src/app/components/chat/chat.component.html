@@ -1,0 +1,64 @@
+<div class="chat flex flex-column">
+  <div class="col-12 flex-1">
+    <div class="chat-container flex flex-column" #chatContainer>
+      <ng-container *ngFor="let message of messages; index as i">
+        <ng-container
+          *ngIf="message.user === user.name; else defaultMessageTemplate"
+        >
+          <div class="chat-message col-12 flex justify-content-end">
+            <div class="chat-message-content">
+              <p>{{ message.content }}</p>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #defaultMessageTemplate>
+          <div
+            class="chat-message-user chat-message flex col-12 justify-content-start"
+            [ngClass]="{
+              'first--in--group': messages[i - 1]?.user !== message.user
+            }"
+          >
+            <!-- <ng-container *ngIf="messages[i - 1]?.user !== message.user">
+              <app-user-bubble [user]="message.user"></app-user-bubble>
+            </ng-container> -->
+            <div class="chat-message-content">
+              <h5>
+                {{ messages[i - 1]?.user === message.user ? "" : message.user }}
+              </h5>
+              <p>{{ message.content }}</p>
+            </div>
+          </div>
+        </ng-template>
+      </ng-container>
+
+      <ng-container
+        *ngIf="currentlyTypingUser && currentlyTypingUser.name !== user.name"
+      >
+        <div class="chat-message-typing">
+          <span>{{ currentlyTypingUser.name }} está digitando...</span>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <form
+    class="col-12 flex flex-row"
+    [formGroup]="chatForm"
+    (ngSubmit)="sendMessage()"
+  >
+    <input
+      pInputText
+      class="flex flex-1"
+      placeholder="Digite sua mensagem..."
+      formControlName="message"
+    />
+    <p-button
+      type="submit"
+      [disabled]="chatForm.invalid"
+      (onClick)="sendMessage()"
+      styleClass="ml-2 p-button-success"
+      icon="pi pi-send"
+      iconPos="right"
+    ></p-button>
+  </form>
+</div>

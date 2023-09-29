@@ -1,0 +1,19 @@
+/* You can add global styles to this file, and also import other style files */
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  max-width: 1280px;
+  margin: 0 auto;
+  position: relative;
+  max-height: 100vh;
+  font-family: 'Roboto', sans-serif;
+  overflow: hidden;
+}
