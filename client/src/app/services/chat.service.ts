@@ -36,6 +36,10 @@ export class ChatService {
     SocketIoClient.emit("Is Typing", user);
   }
 
+  public createRoom(): void {
+    SocketIoClient.emit("Create Room");
+  }
+
   public onUserIsTyping(): Observable<IUser | null> {
     return convertToObservable<IUser | null>("Is Typing");
   }
