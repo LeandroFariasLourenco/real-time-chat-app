@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { IUser } from 'lib';
+import { IUser, SocketEvents } from 'lib';
 import randomColor from 'randomcolor';
 import { UserService } from 'src/app/services/user.service';
 
@@ -11,7 +11,7 @@ import { UserService } from 'src/app/services/user.service';
 })
 export class UserFormComponent implements OnInit {
   private user: IUser | null = this.userService.getCurrentUser();
-  private mode: 'edit' | 'create' = this.user ? 'edit' : 'create';
+  public mode: 'edit' | 'create' = this.user ? 'edit' : 'create';
   public userForm: FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.minLength(2)]),
   });
@@ -23,6 +23,8 @@ export class UserFormComponent implements OnInit {
   public ngOnInit(): void {
     if (this.mode === 'edit') {
       this.patchUserValues();
+    } else {
+      this.userForm.addControl('room', new FormControl(''));
     }
   }
 

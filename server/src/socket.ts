@@ -2,15 +2,21 @@ import randomColor from 'randomcolor';
 import { USERS_QUERY } from './database/queries/users';
 import { getDatabaseConnection } from './database/database';
 import { IMessage, IUser } from "lib";
-import { v4 as uuidv4 } from 'uuid';
 import { Socket } from "socket.io";
+import { SocketEvents } from 'lib';
 import { IO_SERVER } from "./server";
 import { MESSAGES_QUERY } from './database/queries/messages';
+import chalk from 'chalk';
+import { SESSION_MIDDLEWARE } from './setup-express';
 
-export const setupSocket = () => {
+
+export const socket = () => {
+  IO_SERVER.engine.use(SESSION_MIDDLEWARE);
   IO_SERVER.on('connection', async (socket: Socket) => {
+    console.log(SocketEvents.MessageReceived);
+
     const connection = await getDatabaseConnection();
-    console.log('a user connected');
+    console.log(chalk.green('a user connected'));
   
     const emitUserChange = async () => {
       const users = await connection.all(USERS_QUERY.SELECT);
@@ -64,7 +70,7 @@ export const setupSocket = () => {
 
     socket.on('disconnect', () => {
       connection.close();
-      console.log('user has disconnected');
+      console.log(chalk.red('user has disconnected'));
       IO_SERVER.emit("User Disconnected");
     });
 
@@ -73,7 +79,6 @@ export const setupSocket = () => {
     });
 
     socket.on("Change User Color", async ({ userId, color }: { userId: string, color: string }) => {
-      console.log(userId);
       await connection.run(USERS_QUERY.UPDATE_COLOR, {
         '$id': userId,
         '$color': color,
