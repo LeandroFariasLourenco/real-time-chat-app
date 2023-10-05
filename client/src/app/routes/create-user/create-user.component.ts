@@ -19,7 +19,7 @@ export class CreateUserComponent implements OnInit {
 
   public openCreateUserForm(): void {
     this.dialogService.open(UserFormComponent, {
-      header: "Novo usuário",
+      header: "Bem vindo!",
       dismissableMask: false,
       closable: false,
       closeOnEscape: false,

@@ -1,6 +1,11 @@
-<div class="chat flex flex-column">
-  <div class="col-12 flex-1">
+<div class="chat col-12 flex flex-column">
+  <div class="col-12 flex-1 p-0">
     <div class="chat-container flex flex-column" #chatContainer>
+      <div class="chat-container-header flex align-items-center pt-3 pl-3 gap-3">
+        <app-user-bubble [user]="user"></app-user-bubble>
+        <h4>{{ user.name }}</h4>
+      </div>
+      <p-divider></p-divider>
       <ng-container *ngFor="let message of messages; index as i">
         <ng-container
           *ngIf="message.user.name === user.name; else defaultMessageTemplate"
@@ -42,7 +47,7 @@
   </div>
 
   <form
-    class="col-12 flex flex-row"
+    class="col-12 flex flex-row pt-3 p-0"
     [formGroup]="chatForm"
     (ngSubmit)="sendMessage()"
   >

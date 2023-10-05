@@ -1,21 +1,44 @@
 import { Injectable } from "@angular/core";
-import { UserService } from "../services/user.service";
 import { Router } from "@angular/router";
+import { AuthService } from "../services/auth.service";
+import { firstValueFrom } from "rxjs";
+import { MessageService } from "primeng/api";
 
 @Injectable()
 export class AuthenticationGuard {
 
   constructor(
-    private readonly userService: UserService,
-    private readonly router: Router
+    private readonly authService: AuthService,
+    private readonly router: Router,
+    private readonly messageService: MessageService,
   ) { }
 
-  public canActivate(): boolean {
-    if (this.userService.getCurrentUser()) {
-      return true;
-    }
+  public async canActivate(): Promise<boolean> {
+    try {
+      const session = await firstValueFrom(this.authService.getCurrentSession());
 
-    this.router.navigateByUrl('/create-user');
-    return false;
+      if (session.id) {
+        return true;
+      }
+
+      this.router.navigateByUrl('/create-user');
+      this.messageService.add({
+        key: 'notification',
+        severity: 'error',
+        summary: 'Não permitido',
+        detail: 'Usuário não encontrado.'
+      });
+      return false;
+    } catch (e) {
+
+      this.messageService.add({
+        key: 'notification',
+        severity: 'error',
+        summary: 'Não permitido',
+        detail: 'Usuário não autenticado.'
+      });
+      this.router.navigateByUrl('/create-user');
+      return false;
+    }
   }
 }

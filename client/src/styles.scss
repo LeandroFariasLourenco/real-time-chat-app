@@ -11,9 +11,20 @@
 
 body {
   max-width: 1280px;
+  height: 100vh;
   margin: 0 auto;
   position: relative;
   max-height: 100vh;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   overflow: hidden;
+}
+
+.p-dialog-content {
+  overflow-y: hidden !important;
+}
+
+button {
+  cursor: pointer;
+  outline: none;
+  border: 0;
 }

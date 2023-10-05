@@ -1,29 +1,40 @@
-<div class="col-12 flex flex-column side-bar" #listOfUsers>
+<div class="col-12 flex flex-column side-bar">
   <div
-    class="col-12 flex justify-content-between align-items-center side-bar-header"
+    class="col-12 flex side-bar-header"
   >
     <div class="col-12 flex align-items-center">
       <div class="flex flex-1 align-items-center gap-2">
-        <app-user-bubble [enableColorPicker]="true" [user]="currentUser"></app-user-bubble>
+        <app-user-bubble
+          [enableColorPicker]="true"
+          [user]="currentUser"
+        ></app-user-bubble>
         <h5>{{ currentUser.name }}</h5>
       </div>
-      <i class="pi pi-pencil" style="font-size: 1rem; cursor: pointer;" (click)="openEditNickName()"></i>
+      <i
+        class="pi pi-pencil"
+        style="font-size: 1rem; cursor: pointer"
+        (click)="openEditNickName()"
+      ></i>
     </div>
   </div>
-  <div class="flex-1" style="overflow: auto;">
+  <div class="side-bar-body-users flex-1" #listOfUsers>
     <ng-container *ngFor="let user of users">
       <ng-container *ngIf="user.name !== currentUser.name">
-        <div class="col-12 flex align-items-center gap-2">
+        <button
+          class="col-12 flex align-items-center gap-2 side-bar-body-user"
+          [style]="{ backgroundColor: user.color + '50' }"
+          [routerLink]="['/home-page/chat', { userOne: currentUser.id, userTwo: user.id }]"
+        >
           <app-user-bubble [user]="user"></app-user-bubble>
           <h5>{{ user.name }}</h5>
-        </div>
+        </button>
       </ng-container>
     </ng-container>
   </div>
   <p-divider></p-divider>
   <div class="col-12 flex justify-content-between">
     <p-button
-      (onClick)="userService.logout()"
+      (onClick)="logout()"
       styleClass="p-button-danger"
       icon="pi pi-sign-in"
     ></p-button>

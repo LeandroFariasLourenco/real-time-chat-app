@@ -1,8 +1,7 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { IMessage, IUser } from 'lib';
 import { ChatService } from 'src/app/services/chat.service';
-import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-chat',
@@ -11,22 +10,31 @@ import { UserService } from 'src/app/services/user.service';
 })
 export class ChatComponent implements OnInit, AfterViewInit {
   @ViewChild('chatContainer') chatContainer!: ElementRef<HTMLDivElement>
-  public messages: IMessage[] = [];
-  public user: IUser = this.userService.getCurrentUser()!;
+
+  @Input() public messages: IMessage[] = [];
+
+  @Input() public user: IUser = {} as IUser;
+
+  @Output() private handleSubmit: EventEmitter<{
+    timestamp: string,
+    content: string,
+  }> = new EventEmitter<{
+    timestamp: string,
+    content: string,
+  }>();
+
   public chatForm: FormGroup = new FormGroup({
     message: new FormControl('', [Validators.required])
   });
+  
   public currentlyTypingUser: IUser | null = null;
 
   constructor(
     private readonly chatService: ChatService,
-    private readonly userService: UserService,
     private readonly cdr: ChangeDetectorRef
   ) { }
 
   public ngOnInit(): void {
-    this.listenToMessages();
-    this.getChatHistory();
     this.onUserTyping();
   }
 
@@ -34,21 +42,21 @@ export class ChatComponent implements OnInit, AfterViewInit {
     this.chatContainer.nativeElement.style.height = `${this.chatContainer.nativeElement.clientHeight}px`
   }
 
-  public listenToMessages(): void {
-    this.chatService.listenToMessages().subscribe((messages) => {
-      this.messages = [...messages];
-      this.scrollToEnd();
-    })
-  }
-
   public sendMessage(): void {
-    this.chatService.sendMessage({
-      user: this.user,
-      content: this.chatForm.value.message,
-      timestamp: new Date().toISOString()
+    const { message } = this.chatForm.value;
+
+    this.handleSubmit.emit({
+      timestamp: new Date().toISOString(),
+      content: message,
     });
     this.chatForm.reset();
-    this.chatService.dispatchUserIsTyping(null);
+    // this.chatService.sendMessage({
+    //   user: this.user,
+    //   content: this.chatForm.value.message,
+    //   timestamp: new Date().toISOString()
+    // });
+    // this.chatForm.reset();
+    // this.chatService.dispatchUserIsTyping(null);
   }
 
   private scrollToEnd(): void {
@@ -70,13 +78,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
     this.chatService.onUserIsTyping().subscribe((user) => {
       this.currentlyTypingUser = user;
-      this.scrollToEnd();
-    });
-  }
-
-  public getChatHistory(): void {
-    this.chatService.getMessageHistory().subscribe(({ messages }) => {
-      this.messages = [...messages];
       this.scrollToEnd();
     });
   }

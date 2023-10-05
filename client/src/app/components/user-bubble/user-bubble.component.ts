@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { IUser } from 'lib';
-import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-user-bubble',
@@ -18,7 +17,7 @@ export class UserBubbleComponent implements OnInit {
   public color!: string;
 
   constructor(
-    private userService: UserService
+    // private userService: UserService
   ) { }
 
   public ngOnInit(): void {
@@ -29,9 +28,9 @@ export class UserBubbleComponent implements OnInit {
   public onColorChange(): void {
     if (this.user.color === this.color) return;
 
-    this.userService.updateUserColor(
-      this.user.id!,
-      this.color
-    );
+    // this.userService.updateUserColor(
+    //   this.user.id!,
+    //   this.color
+    // );
   }
 }

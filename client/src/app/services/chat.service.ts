@@ -4,7 +4,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { IMessage, IUser } from 'lib';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
-import { convertToObservable } from '../functions/convert-to-observable';
+import { socketEventToObservable } from '../functions/convert-to-observable';
 
 @Injectable()
 export class ChatService {
@@ -16,20 +16,24 @@ export class ChatService {
     this.zone = new NgZone({ enableLongStackTrace: true });
   }
 
-  public sendMessage(message: IMessage): void {
-    SocketIoClient.emit("Create Message", message);
+  public sendMessage(message: IMessage, firstUserId: number, secondUserId: number): void {
+    this.httpClient.post('server/message', {
+      firstUserId,
+      secondUserId,
+      message,
+    });
   }
 
-  public listenToMessages(): Observable<IMessage[]> {
-    return convertToObservable<IMessage[]>("New Message Received");
+  public listenForMessages(userId: number): Observable<IMessage[]> {
+    return socketEventToObservable<IMessage[]>("New Message Received");
   }
 
   public onUserConnected(): Observable<IUser[]> {
-    return convertToObservable<IUser[]>("New User Connected");
+    return socketEventToObservable<IUser[]>("New User Connected");
   }
   
   public onUserDisconnected(): Observable<IUser> {
-    return convertToObservable<IUser>("User Disconnected");
+    return socketEventToObservable<IUser>("User Disconnected");
   }
 
   public dispatchUserIsTyping(user: IUser | null): void {
@@ -41,7 +45,15 @@ export class ChatService {
   }
 
   public onUserIsTyping(): Observable<IUser | null> {
-    return convertToObservable<IUser | null>("Is Typing");
+    return socketEventToObservable<IUser | null>("Is Typing");
+  }
+
+  public getRoomChatHistory(userOne: number, userTwo: number): Observable<{ messages: IMessage[] }> {
+    return this.httpClient.get<{ messages: IMessage[] }>(`server/messages`, { params: { userOne, userTwo } });
+  }
+
+  public createChatRoom(firstUserId: number, secondUserId: number): void {
+    SocketIoClient.emit("Create a Chat With a User", { firstUserId, secondUserId });
   }
 
   public getMessageHistory(): Observable<{ messages: IMessage[]}> {

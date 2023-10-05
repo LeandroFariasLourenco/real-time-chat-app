@@ -3,12 +3,19 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthenticationGuard } from './guard/authentication.guard';
 import { CreateUserComponent } from './routes/create-user/create-user.component';
 import { HomePageComponent } from './routes/home-page/home-page.component';
+import { ChatWindowComponent } from './routes/chat-window/chat-window.component';
+import { WelcomeComponent } from './routes/welcome/welcome.component';
 
 const routes: Routes = [
   {
     path: 'home-page',
-    component: HomePageComponent,
     canActivate: [AuthenticationGuard],
+    component: HomePageComponent,
+    children: [
+      { component: WelcomeComponent, path: '' },
+      { component: ChatWindowComponent, path: 'chat' },
+      { path: '**', redirectTo: 'home-page' }
+    ],
   },
   {
     path: 'create-user',

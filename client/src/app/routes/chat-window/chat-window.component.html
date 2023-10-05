@@ -1,0 +1,7 @@
+<ng-container *ngIf="!isLoading">
+  <app-chat
+    [user]="user"
+    [messages]="messages"
+    (handleSubmit)="sendMessage($event)"
+  ></app-chat>
+</ng-container>

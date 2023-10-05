@@ -1,8 +1,11 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { IUser } from 'lib';
+import { MessageService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
-import { ChatService } from 'src/app/services/chat.service';
-import { UserService } from 'src/app/services/user.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { UserRestService } from 'src/app/services/rest/user-rest.service';
+import { UserSocketService } from 'src/app/services/socket/user-socket.service';
 import { UserFormComponent } from '../user-form/user-form.component';
 
 @Component({
@@ -12,45 +15,48 @@ import { UserFormComponent } from '../user-form/user-form.component';
 })
 export class SideBarComponent implements OnInit, AfterViewInit {
   @ViewChild('listOfUsers') listOfUsers!: ElementRef<HTMLDivElement>;
-  public currentUser: IUser = this.userService.getCurrentUser()!;
-  public users: IUser[] = [];
+  
+  @Input('user') public currentUser!: IUser;
+  
+  @Input() public users: IUser[] = [];
+  
   public statusOptions = [
     { label: 'Disponível' },
     { label: 'Offline' },
   ];
 
   constructor(
-    public readonly userService: UserService,
+    public readonly userRestService: UserRestService,
+    public readonly userSocketService: UserSocketService,
+    public readonly authService: AuthService,
     private readonly dialogService: DialogService,
-    private readonly chatService: ChatService,
+    private readonly router: Router,
+    private readonly messageService: MessageService,
   ) { }
 
   public ngOnInit(): void {
-    this.listenForNewUsers();
-    this.getAllUsers();
   }
   
   public ngAfterViewInit(): void {
     this.listOfUsers.nativeElement.style.height = `${this.listOfUsers.nativeElement.clientHeight}px`
   }
 
-  private getAllUsers(): void {
-    this.userService.getUsers().subscribe(({ users }) => {
-      this.users = [...users];
-      this.users.reverse();
-    });
-  }
-
-  private listenForNewUsers(): void {
-    this.chatService.onUserConnected().subscribe((users) => {
-      this.users = [...users];
-      this.users.reverse();
-    });
-  }
-
   public openEditNickName(): void {
     this.dialogService.open(UserFormComponent, {
       header: "Alterar apelido",
+    });
+  }
+
+  public logout(): void {
+    this.authService.logout().subscribe(() => {
+      this.messageService.add({
+        severity: 'success',
+        detail: 'Sessão finalizada.',
+        summary: 'Sucesso',
+        key: 'notification'
+      });
+      this.router.navigateByUrl('/create-user');
+      this.userSocketService.dispatchUserDisconnected(this.currentUser);
     });
   }
 }

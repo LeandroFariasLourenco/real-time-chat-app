@@ -1,9 +1,14 @@
-<div class="grid col-12">
+<div class="grid col-12 home">
   <div class="col-3">
-    <app-side-bar></app-side-bar>
+    <ng-container *ngIf="user">
+      <app-side-bar [users]="users" [user]="user"></app-side-bar>
+    </ng-container>
   </div>
 
-  <app-chat class="col-9 p-0"></app-chat>
+  <div class="col-9 p-0">
+    <router-outlet></router-outlet>
+  </div>
+  <!-- <app-chat class="col-9 p-0"></app-chat> -->
 </div>
 
 <p-toast position="bottom-center"></p-toast>

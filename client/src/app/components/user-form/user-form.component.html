@@ -5,41 +5,58 @@
       type="text"
       formControlName="name"
       pInputText
-      placeholder="Insira seu nome"
-      style="width: 100%"
+      placeholder="Nome de exibição"
+      style="width: 335px"
     />
   </span>
 
-  <ng-container *ngIf="mode === 'create'">
-    <span class="p-input-icon-left" style="width: 100%">
-      <i class="pi pi-link"></i>
-      <input
-        type="text"
-        formControlName="room"
-        pInputText
-        placeholder="Id da sala"
-        style="width: 100%"
-      />
-    </span>
-  </ng-container>
+  <div
+    class="grid flex flex-nowrap align-items-center justify-content-around col-12 pr-0"
+  >
+    <ng-container [ngSwitch]="mode">
+      <ng-container *ngSwitchCase="'login'">
+        <p-button
+          (onClick)="changeFormMode('create')"
+          label="Criar usuário"
+          [disabled]="isLoading"
+          styleClass="p-0 p-button-link"
+        ></p-button>
 
-  <div class="grid col-12 flex justify-content-between">
-    <ng-container *ngIf="mode === 'create'">
-      <p-button
-        label="Criar sala"
-        iconPos="right"
-        icon="pi pi-plus"
-        [disabled]="userForm.value.room"
-      ></p-button>
+        <p-button
+          type="submit"
+          [disabled]="userForm.invalid || isLoading"
+          styleClass="p-button-success"
+          label="Entrar"
+          iconPos="right"
+          icon="pi pi-sign-in"
+        ></p-button>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'create'">
+        <p-button
+          (onClick)="changeFormMode('login')"
+          label="Já possui usuário?"
+          [disabled]="isLoading"
+          styleClass="p-0 p-button-link"
+        ></p-button>
+
+        <p-button
+          type="submit"
+          [disabled]="userForm.invalid || isLoading"
+          styleClass="p-button-success"
+          label="Criar usuário"
+          iconPos="right"
+          icon="pi pi-sign-in"
+        ></p-button>
+      </ng-container>
     </ng-container>
-
-    <p-button
-      type="submit"
-      [disabled]="!userForm.value.room"
-      styleClass="p-button-success"
-      label="Juntar-se"
-      iconPos="right"
-      icon="pi pi-sign-in"
-    ></p-button>
   </div>
+
+  <ng-container *ngIf="errorMessage">
+    <div
+      class="col-12 flex justify-content-center align-items-center p-button-danger p-0 m-0"
+    >
+      <span style="font-size: 14px; color: red">{{ errorMessage }}</span>
+    </div>
+  </ng-container>
 </form>
