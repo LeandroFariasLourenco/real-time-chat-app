@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IMessage, IUser } from 'lib';
 import { ChatService } from './../../services/chat.service';
 import { ChatRestService } from 'src/app/services/rest/chat-rest.service';
 import { UserRestService } from 'src/app/services/rest/user-rest.service';
-import { combineLatest, finalize } from 'rxjs';
+import { Subscription, combineLatest, finalize } from 'rxjs';
 import { ChatSocketService } from 'src/app/services/socket/chat-socket.service';
 import { MessageRestService } from 'src/app/services/rest/message-rest.service';
 import { MessageSocketService } from 'src/app/services/socket/message-socket.service';
@@ -15,7 +15,7 @@ import { MessageSocketService } from 'src/app/services/socket/message-socket.ser
   styleUrls: ['./chat-window.component.scss']
 })
 export class ChatWindowComponent implements OnInit {
-  public isLoading: boolean = true;
+  public isLoadingUser: boolean = true;
 
   public firstUserId!: string;
 
@@ -23,7 +23,9 @@ export class ChatWindowComponent implements OnInit {
 
   public messages: IMessage[] = [];
 
-  public user!: IUser;
+  public user: IUser | null = null;
+
+  private subscriptions$: Subscription = new Subscription();
 
   constructor(
     private readonly chatRestService: ChatRestService,
@@ -36,13 +38,13 @@ export class ChatWindowComponent implements OnInit {
 
   public ngOnInit(): void {
     this.getPathParam();
+    this.listenForMessages();
   }
 
   private listenForMessages(): void {
-    this.messageSocketService.listenForNewMessages().subscribe((message) => {
-      console.log(message);
-      this.messages = [...this.messages, message];
-    });
+      this.messageSocketService.listenForNewMessages().subscribe((messages) => {
+        this.messages = messages;
+      })
   }
 
   private getPathParam(): void {
@@ -50,10 +52,11 @@ export class ChatWindowComponent implements OnInit {
       userOne,
       userTwo,
     }) => {
-      this.isLoading = true;
+      this.messages = [];
+      this.isLoadingUser = true;
+      this.user = null;
       this.firstUserId = userOne;
       this.secondUserId = userTwo;
-      this.listenForMessages();
       this.createChatRoom();
       this.getSelectedUserInfo();
     });
@@ -63,24 +66,22 @@ export class ChatWindowComponent implements OnInit {
     this.chatRestService.createRoom({
       firstUserId: this.firstUserId,
       secondUserId: this.secondUserId,
-    }).subscribe((chatId) => {
+    }).subscribe(({ chatId }) => {
       this.chatSocketService.dispatchNewRoomCreated(chatId);
+
+      this.messageRestService.getMessagesByChat({
+        firstUserId: this.firstUserId,
+        secondUserId: this.secondUserId,
+      }).subscribe((messages) => {
+        this.messages = messages;
+      });
     });
   }
 
   private getSelectedUserInfo(): void {
-    combineLatest([
-      this.messageRestService.getMessagesByChat({
-        firstUserId: this.firstUserId,
-        secondUserId: this.secondUserId,
-      }),
-      this.userRestService.getUserById(this.secondUserId)
-    ])
-      .pipe(finalize(() => {
-        this.isLoading = false;
-      }))
-      .subscribe(([messages, user]) => {
-        this.messages = messages;
+    this.userRestService.getUserById(this.secondUserId)
+      .subscribe((user) => {
+        this.isLoadingUser = false;
         this.user = user;
       });
   }
@@ -93,7 +94,7 @@ export class ChatWindowComponent implements OnInit {
       message: {
         content,
         timestamp,
-        user: this.user,
+        user: this.user!,
       },
       firstUserId: this.firstUserId,
       secondUserId: this.secondUserId

@@ -20,7 +20,7 @@ export class UserSocketService {
     return socketEventToObservable<IUser>("User Disconnected");
   }
 
-  public listenForNewUser(): Observable<IUser> {
-    return socketEventToObservable<IUser>("User Created");
+  public listenForNewUsers(): Observable<IUser[]> {
+    return socketEventToObservable<IUser[]>("User Created");
   }
 }

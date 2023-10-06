@@ -1,0 +1,1 @@
+UPDATE users SET color = $color, name = $name WHERE users.id = $id

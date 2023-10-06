@@ -12,7 +12,7 @@ export class MessageSocketService {
     SocketIoClient.emit("New Message Received", message);
   }
 
-  public listenForNewMessages(): Observable<IMessage> {
-    return socketEventToObservable<IMessage>("New Message Received");
+  public listenForNewMessages(): Observable<IMessage[]> {
+    return socketEventToObservable<IMessage[]>("Incoming New Message");
   }
 }

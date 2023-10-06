@@ -4,7 +4,7 @@ import { Observable } from "rxjs";
 
 @Injectable()
 export class ChatRestService {
-  private url = "/chat";
+  private url = "chat";
 
   constructor (
     private readonly httpClient: HttpClient
@@ -13,7 +13,7 @@ export class ChatRestService {
   createRoom({
     firstUserId,
     secondUserId
-  }: { firstUserId: string; secondUserId: string }): Observable<string> {
-    return this.httpClient.post<string>(`server/${this.url}`, { firstUserId, secondUserId });
+  }: { firstUserId: string; secondUserId: string }): Observable<{ chatId: string }> {
+    return this.httpClient.post<{ chatId: string; }>(`server/${this.url}`, { firstUserId, secondUserId });
   }
 }

@@ -1,72 +1,36 @@
-import { IUser } from "lib";
-import session from 'express-session';
-import { getDatabaseConnection } from "./database/database";
-import { MESSAGES_QUERY } from "./database/queries/messages";
-import { USERS_QUERY } from "./database/queries/users";
-import { APP } from "./server";
 import bodyParser from "body-parser";
-
-export const SESSION_MIDDLEWARE = session({
-  cookie: { maxAge: 6000000 },
-  secret: 'secret-key',
-  resave: false,
-  saveUninitialized: false,
-});
+import cookieParser from 'cookie-parser';
+import { Messages } from "./express/messages";
+import { Users } from "./express/users";
+import { APP } from "./server";
+import { Chat } from "./express/chat";
+import { Auth } from "./express/auth";
+import { session, auth } from "./middlewares";
 
 const jsonParser = bodyParser.json();
 
-export const setupExpress = () => {
+export const setupExpress = async () => {
   APP.use(jsonParser);
-  APP.use(SESSION_MIDDLEWARE);
+  APP.use(cookieParser());
+  APP.use(session);
+  APP.use(auth);
 
-  APP.get('/messages', async (request, response) => {
-    const connection = await getDatabaseConnection();
-    const messages = (await connection.all(MESSAGES_QUERY.SELECT_WITH_USER)).map((message) => {
-      return {
-        id: message.id,
-        content: message.content,
-        timestamp: message.timestamp,
-        user: {
-          id: message.userId,
-          name: message.name,
-          color: message.color
-        }
-      }
-    });
-    response.send({ messages });
-  });
+  APP.get(Users.urls.get, Users.get);
+  APP.get(Users.urls.getById, Users.getById);
+  APP.put(Users.urls.update, Users.update);
+  APP.post(Users.urls.create, Users.create);
+
   
-  APP.get('/users', async (request, response) => {
-    const connection = await getDatabaseConnection();
-    const users = await connection.all<IUser[]>(USERS_QUERY.SELECT);
-    response.send({ users });
-  });
+  APP.get(Chat.urls.get, Chat.get);
+  APP.post(Chat.urls.create, Chat.create);
 
-  APP.post('/login', async (request, response) => {
-    const sessionData = request.session;
-    console.log(request.body);
-    const { username, password } = request.body;
 
-    (request.session as any).username = username;
-    (request.session as any).isLoggedIn = true;
+  APP.post(Auth.urls.login, Auth.login);
+  APP.get(Auth.urls.logout, Auth.logout);
+  APP.get(Auth.urls.getCurrentSession, Auth.getCurrentSession);
 
-    return {
-      statusCode: 200,
-    };
-  });
-
-  APP.get('get-sessions', async (request) => {
-    console.log(request.session);
-
-    return request.session;
-  });
-
-  APP.post('/logout', async (request, response) => {
-    request.session.destroy(() => {});
-
-    return {
-      statusCode: 200,
-    }
-  });
+  
+  APP.get(Messages.urls.get, Messages.get);
+  APP.post(Messages.urls.create, Messages.create);
 }
 

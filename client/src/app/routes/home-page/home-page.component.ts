@@ -47,14 +47,14 @@ export class HomePageComponent implements OnInit {
   }
 
   private listenUserConnections(): void {
-    this.userSocketService.listenForNewUser().subscribe((user) => {
+    this.userSocketService.listenForNewUsers().subscribe((users) => {
       this.messageService.add({
         severity: 'warn',
         summary: 'Usuário conectado',
-        detail: `${user.name} entrou na sessão.`,
+        detail: `${users.at(-1)!.name} entrou na sessão.`,
         key: 'notification'
       });
-      this.users = [user, ...this.users];
+      this.users = users;
     });
 
     this.userSocketService.listenForUserDisconnect().subscribe((user) => {
